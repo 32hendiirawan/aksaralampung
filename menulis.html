@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor Aksara Lampung</title>
+    <style>
+        /* 1. KONEKSI FONT (Pastikan file font ada di folder yang sama) */
+        @font-face {
+            font-family: 'kaganga_21';
+            src: url('css/kaganga.ttf'); /* Ganti nama file jika berbeda */
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            background-image: url(bg.jpg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .app-container {
+            background: rgba(255,255,255,0.5);
+            width: 100%;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 { color: #b91c1c; text-align: center; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #666; margin-bottom: 15px; font-size: 16px; }
+
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #333; }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 20px;
+            resize: none;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #b91c1c;
+            outline: none;
+        }
+
+        .output-label { display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn-copy {
+            background-color: #b91c1c;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .btn-copy:hover { background-color: #991b1b; }
+
+        #outputLampung {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #b91c1c;
+            border-radius: 10px;
+            background-color: #fffaf0;
+            font-family: 'kaganga_21', serif;
+            font-size: 24px; /* Ukuran aksara diperbesar agar jelas */
+            word-wrap: break-word;
+            box-sizing: border-box;
+            margin-top: 0px;
+        }
+        
+        .back { 
+            text-decoration: none; 
+            background-color: #b91c1c;
+            border-radius: 12px;
+            width: 80%;
+            height: 24px;
+            color: rgb(255, 255, 255); 
+            font-weight: bold; 
+            padding: 10px 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>Aksara Lampung - <span style="font-family: 'kaganga_21'">akMsr lmMpuX</span></h1>
+    <p class="subtitle"><i>Transliterasi Latin ke Aksara Lampung</i></p>
+
+    <div style="display: flex; flex-direction: row; gap:20px">
+        <div style="width: 50%;">
+            <label for="inputLatin">Input Latin:</label>
+            <textarea id="inputLatin" placeholder="Masukkan teks dalam huruf Latin..."></textarea>
+            <details class="guide-box">
+                <summary>Panduan Pengetikan <b>(Penting!)</b></summary>
+                <div class="guide-content">
+                    <div class="guide-item">
+                        <strong>Vokal E (Bebek)</strong>
+                        <span>Ketik <strong>ee</strong> atau <strong>é</strong> untuk bunyi <em>é-taling</em> (contoh: beebek). Ketik <strong>e</strong> biasa untuk bunyi <em>e-pepet</em> (contoh: semut).</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Diftong (ia, ua, ...)</strong>
+                        <span>Gunakan penyisip 'y' atau 'w' sesuai ucapan. Contoh: sedia → <strong>sediya</strong>, suara → <strong>suwara</strong>.</span>
+                    </div>
+                    <div class="guide-item">
+                        <strong>Aplikasi</strong>
+                        <span>ini hanya membantu Anda menulis Aksara Lampung, mungkin terdapat kekeliruan dengan kaidah yang benar. Mohon kritik jika terdapat kesalahan dan saran untuk perbaikan melalui <a href="https://wa.me/082289015759" target="_blank" style="color: green;">WhatsApp</a>.</span>
+                    </div>
+                    <div class="guide-item">
+                        <span>
+                            Gunakan font yang sesuai untuk copy-> paste ke dokumen Anda, silakan <a href="font/kaganga.ttf" download="kaganga.ttf" class="btn-download">
+                            download font di sini</a>.
+                        </span>
+                    </div>
+                </div>
+            </details>
+        </div>
+        <div style="width: 50%; position: relative;">
+            <label>Output Aksara Lampung:</label>
+            <textarea id="outputLampung" readonly>                
+            </textarea>
+            <div style="position: absolute; right: 10px; bottom: 40px;">
+                <button class="btn-copy" onclick="copyResult()">
+                    📋 Salin
+                </button>
+            </div>
+        </div>
+    </div>
+<script>
+    // DATA MAPPING UNICODE LAMPUNG (U+11080 - U+110BA)
+    const kelabai = {
+        'k': 'k', 'g': 'g', 'ng': 'G',
+        'p': 'p', 'b': 'b', 'm': 'm',
+        't': 't', 'd': 'd', 'n': 'n',
+        'c': 'c', 'j': 'j', 'ny': 'N',
+        'y': 'y', 'a': 'a', 'l': 'l',
+        'r': 'r', 's': 's', 'w': 'w',
+        'h': 'h', 'gh': 'H', 
+        'f': 'p', 'v': 'p', 'q': 'k', 'z': 'j'  // Adaptasi untuk fonem asing
+    };
+
+    const anakSuratVokal = {
+        'i': 'i', 'u': 'u', 'e': 'E', 'é': 'e', 'ee': 'e',
+        'o': 'o', 'ai': 'I', 'au': 'W'
+    };
+
+    const anakSuratMati = {
+        'n': 'A',  // Datas
+        'r': 'R',  // Rejenjung
+        'h': 'x',  // Keleniah
+        'ng': 'X'  // Redatas
+    };
+
+    const nengen = 'M';
+
+    function transliterasi(teks) {
+        let res = "";
+        let i = 0;
+        teks = teks.toLowerCase();
+
+        while (i < teks.length) {
+            let tri = teks.substring(i, i + 3); // gh, ny
+            let bi = teks.substring(i, i + 2);  // ng, ai, au
+            let uni = teks.substring(i, i + 1);
+
+            let currentKonsonan = "";
+            let step = 0;
+
+            // 1. IDENTIFIKASI KONSONAN
+            if (kelabai[bi]) { currentKonsonan = bi; step = 2; }
+            else if (kelabai[uni]) { currentKonsonan = uni; step = 1; }
+
+            if (currentKonsonan) {
+                let nextTwo = teks.substring(i + step, i + step + 2);
+                let nextOne = teks.substring(i + step, i + step + 1);
+
+                // A. Cek Vokal Gabungan (ai, au)
+                if (anakSuratVokal[nextTwo]) {
+                    res += kelabai[currentKonsonan] + anakSuratVokal[nextTwo];
+                    i += step + 2;
+                }
+                // B. Cek Vokal Tunggal (a, i, u, e, é, o)
+                else if (nextOne === 'a') {
+                    res += kelabai[currentKonsonan];
+                    i += step + 1;
+                }
+                else if (anakSuratVokal[nextOne]) {
+                    res += kelabai[currentKonsonan] + anakSuratVokal[nextOne];
+                    i += step + 1;
+                }
+                // C. LOGIKA KRUSIAL: Bunyi Mati (n, r, h, ng) di TENGAH atau AKHIR kata
+                // Jika huruf n/r/h/ng diikuti konsonan lain ATAU spasi ATAU akhir teks
+                else if (anakSuratMati[currentKonsonan] && (kelabai[nextOne] || nextOne === " " || nextOne === "")) {
+                    res += anakSuratMati[currentKonsonan];
+                    i += step;
+                }
+                // D. Konsonan Mati selain n,r,h,ng (Gunakan Nengen)
+                else {
+                    if (currentKonsonan === 'a') {
+                        res += kelabai['a'];
+                    } else {
+                        res += kelabai[currentKonsonan] + nengen;
+                    }
+                    i += step;
+                }
+            } 
+            else {
+                // 2. LOGIKA VOKAL MANDIRI DI AWAL KATA
+                if (anakSuratVokal[bi]) {
+                    res += kelabai['a'] + anakSuratVokal[bi];
+                    i += 2;
+                } else if (anakSuratVokal[uni]) {
+                    res += kelabai['a'] + anakSuratVokal[uni];
+                    i += 1;
+                } else {
+                    res += uni;
+                    i += 1;
+                }
+            }
+        }
+        return res;
+    }
+
+    const input = document.getElementById('inputLatin');
+    const output = document.getElementById('outputLampung');
+
+    input.addEventListener('input', (e) => {
+        let start = input.selectionStart;
+        let end = input.selectionEnd;
+        let value = input.value.toLowerCase();
+
+        // OTOMATISASI: Ganti 'ee' menjadi 'é' saat mengetik
+        if (value.includes('ee')) {
+            value = value.replace(/ee/g, 'é');
+            input.value = value;
+            
+            // Mengembalikan posisi kursor agar tidak melompat ke akhir
+            input.setSelectionRange(start - 1, end - 1);
+        }
+
+        // Jalankan transliterasi setelah penggantian karakter
+        output.innerText = transliterasi(value);
+    });
+
+    function copyResult() {
+        const text = output.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Aksara berhasil disalin!");
+        });
+    }
+</script>
+
+</body>
+</html>
