@@ -6,232 +6,487 @@
     <title>Editor Aksara Lampung</title>
     <script type="text/javascript">
       if (top === self) {
-        // Jika halaman dibuka langsung (tidak di dalam iframe),
-        // alihkan paksa ke halaman utama blog Anda
         window.location.href = "https://o-cre.blogspot.com/p/aksara-lampung.html";
-        }
+      }
     </script>    
     <link rel="icon" type="image/png" href="assets/ocre.png">
     <style>
-        /* 1. KONEKSI FONT (Pastikan file font ada di folder yang sama) */
+        /* 1. FONT KAGANGA */
         @font-face {
             font-family: 'kaganga_21';
-            src: url('css/kaganga.ttf'); /* Ganti nama file jika berbeda */
+            src: url('css/kaganga.ttf');
+        }
+
+        :root {
+            --primary: #991b1b;
+            --primary-hover: #7f1d1d;
+            --bg-card: rgba(255, 255, 255, 0.92);
+            --border-color: #e5e7eb;
+            --accent-gold: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f0f2f5;
-            background-image: url(bg.jpg);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #f3f4f6;
+            background-image: radial-gradient(rgba(185, 28, 28, 0.08) 1px, transparent 0);
+            background-size: 24px 24px;
+            color: #1f2937;
+            padding: 30px 15px;
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
         }
 
         .app-container {
-            background: rgba(255,255,255,0.5);
             width: 100%;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 1100px;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         }
 
-        h1 { color: #b91c1c; text-align: center; margin-bottom: 5px; }
-        p.subtitle { text-align: center; color: #666; margin-bottom: 15px; font-size: 16px; }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-        label { font-weight: bold; display: block; margin-bottom: 8px; color: #333; }
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 span.aksara-title {
+            font-family: 'kaganga_21', serif;
+            color: var(--accent-gold);
+            font-size: 2.5rem;
+            font-weight: normal;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+
+        /* GRID EDITOR */
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 35px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-card {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
         textarea {
             width: 100%;
-            height: 200px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 20px;
+            height: 220px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1.1rem;
             resize: none;
-            margin-bottom: 10px;
             box-sizing: border-box;
-            transition: border-color 0.3s;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            color: #111827;
         }
 
         textarea:focus {
-            border-color: #b91c1c;
+            border-color: var(--primary);
             outline: none;
+            box-shadow: 0 0 0 4px rgba(153, 27, 27, 0.1);
         }
-
-        .output-label { display: flex; justify-content: space-between; align-items: center; }
-        
-        .btn-copy {
-            background-color: #b91c1c;
-            color: white;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-
-        .btn-copy:hover { background-color: #991b1b; }
 
         #outputLampung {
-            width: 100%;
-            height: 200px;
-            padding: 10px;
-            border: 1px solid #b91c1c;
-            border-radius: 10px;
-            background-color: #fffaf0;
+            background-color: #fffdfa;
+            border-color: rgba(217, 119, 6, 0.3);
             font-family: 'kaganga_21', serif;
-            font-size: 24px; /* Ukuran aksara diperbesar agar jelas */
-            word-wrap: break-word;
-            box-sizing: border-box;
-            margin-top: 0px;
+            font-size: 2rem;
+            color: #111827;
+            line-height: 1.6;
         }
-        
-        .back { 
-            text-decoration: none; 
-            background-color: #b91c1c;
-            border-radius: 12px;
-            width: 80%;
-            height: 24px;
-            color: rgb(255, 255, 255); 
-            font-weight: bold; 
-            padding: 10px 15px;
+
+        .btn-copy {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(153, 27, 27, 0.2);
+        }
+
+        .btn-copy:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* PANDUAN EXPANDABLE */
+        details.guide-box {
+            margin-top: 15px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .guide-content {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #4b5563;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* SEKSI TABEL KAMUS / REFERENSI */
+        .reference-section {
+            border-top: 2px dashed var(--border-color);
+            padding-top: 30px;
+            margin-top: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+
+        .ref-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #e5e7eb;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(153, 27, 27, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* GRID KARTU HURUF */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+        }
+
+        .char-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .char-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .char-aksara {
+            font-family: 'kaganga_21', serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .char-latin {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #374151;
+            margin-top: 4px;
+        }
+
+        .char-desc {
+            font-size: 0.72rem;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111827;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h1>Aksara Lampung - <span style="font-family: 'kaganga_21'">akMsr lmMpuX</span></h1>
-    <p class="subtitle"><i>Transliterasi Latin ke Aksara Lampung</i></p>
+    <div class="header">
+        <h1>Editor Aksara Lampung <span class="aksara-title">akMsr lmMpuX</span></h1>
+        <p class="subtitle">Transliterasi Praktis & Panduan Tabel Aksara Kaganga</p>
+    </div>
 
-    <div style="display: flex; flex-direction: row; gap:20px">
-        <div style="width: 50%;">
-            <label for="inputLatin">Input Latin:</label>
-            <textarea id="inputLatin" placeholder="Masukkan teks dalam huruf Latin..."></textarea>
+    <!-- AREA EDITOR -->
+    <div class="editor-grid">
+        <div class="editor-card">
+            <label for="inputLatin">Input Teks Latin</label>
+            <textarea id="inputLatin" placeholder="Ketik kalimat Latin di sini..."></textarea>
+            
             <details class="guide-box">
-                <summary>Panduan Pengetikan <b>(Penting!)</b></summary>
+                <summary>💡 Panduan Pengetikan Khusus</summary>
                 <div class="guide-content">
-                    <div class="guide-item">
-                        <strong>Vokal E (Bebek)</strong>
-                        <span>Ketik <strong>ee</strong> atau <strong>é</strong> untuk bunyi <em>é-taling</em> (contoh: beebek). Ketik <strong>e</strong> biasa untuk bunyi <em>e-pepet</em> (contoh: semut).</span>
-                    </div>
-                    <div class="guide-item">
-                        <strong>Diftong (ia, ua, ...)</strong>
-                        <span>Gunakan penyisip 'y' atau 'w' sesuai ucapan. Contoh: sedia → <strong>sediya</strong>, suara → <strong>suwara</strong>.</span>
-                    </div>
-                    <div class="guide-item">
-                        <strong>Aplikasi</strong>
-                        <span>ini hanya membantu Anda menulis Aksara Lampung, mungkin terdapat kekeliruan dengan kaidah yang benar. Mohon kritik jika terdapat kesalahan dan saran untuk perbaikan melalui <a href="https://wa.me/6282289015759" target="_blank" style="color: green;">WhatsApp</a>.</span>
-                    </div>
-                    <div class="guide-item">
-                        <span>
-                            Gunakan font yang sesuai untuk copy-> paste ke dokumen Anda, silakan <a href="font/kaganga.ttf" download="kaganga.ttf" class="btn-download">
-                            download font di sini</a>.
-                        </span>
-                    </div>
+                    <div><strong>• Vokal E (Bebek):</strong> Ketik <strong>ee</strong> atau <strong>é</strong> untuk bunyi <em>é-taling</em> (contoh: <code>beebek</code>). Ketik <strong>e</strong> biasa untuk bunyi <em>e-pepet</em>.</div>
+                    <div><strong>• Diftong (ia, ua):</strong> Gunakan penyisip 'y' atau 'w' (contoh: <code>sediya</code>, <code>suwara</code>).</div>
+                    <div><strong>• Bantuan:</strong> Klik kartu aksara pada tabel referensi di bawah untuk menyisipkan teks/pola secara otomatis ke area input.</div>
                 </div>
             </details>
         </div>
-        <div style="width: 50%; position: relative;">
-            <label>Output Aksara Lampung:</label>
-            <textarea id="outputLampung" readonly>                
-            </textarea>
-            <div style="position: absolute; right: 10px; bottom: 40px;">
-                <button class="btn-copy" onclick="copyResult()">
-                    📋 Salin
-                </button>
-            </div>
+
+        <div class="editor-card">
+            <label for="outputLampung">Output Aksara Lampung</label>
+            <textarea id="outputLampung" readonly placeholder="Aksara Lampung akan muncul secara otomatis..."></textarea>
+            <button class="btn-copy" onclick="copyResult()">
+                📋 Salin Aksara
+            </button>
         </div>
     </div>
+
+    <!-- SEKSI TABEL REFERENSI -->
+    <div class="reference-section">
+        <h2 class="section-title">Tabel Referensi Aksara</h2>
+        
+        <div class="ref-tabs">
+            <button class="tab-btn active" onclick="switchTab('kelabai')">Kelabai Surat (Induk)</button>
+            <button class="tab-btn" onclick="switchTab('anak')">Anak Surat (Gubahan)</button>
+            <button class="tab-btn" onclick="switchTab('angka')">Angka Lampung</button>
+        </div>
+
+        <!-- TAB 1: KELABAI SURAT -->
+        <div id="tab-kelabai" class="tab-content active">
+            <div class="char-grid" id="grid-kelabai"></div>
+        </div>
+
+        <!-- TAB 2: ANAK SURAT -->
+        <div id="tab-anak" class="tab-content">
+            <div class="char-grid" id="grid-anak"></div>
+        </div>
+
+        <!-- TAB 3: ANGKA -->
+        <div id="tab-angka" class="tab-content">
+            <div class="char-grid" id="grid-angka"></div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">Aksara berhasil disalin!</div>
+
 <script>
-    // DATA MAPPING UNICODE LAMPUNG (U+11080 - U+110BA)
-    const kelabai = {
-        'k': 'k', 'g': 'g', 'ng': 'G',
-        'p': 'p', 'b': 'b', 'm': 'm',
-        't': 't', 'd': 'd', 'n': 'n',
-        'c': 'c', 'j': 'j', 'ny': 'N',
-        'y': 'y', 'a': 'a', 'l': 'l',
-        'r': 'r', 's': 's', 'w': 'w',
-        'h': 'h', 'gh': 'H', 
-        'f': 'p', 'v': 'p', 'q': 'k', 'z': 'j'  // Adaptasi untuk fonem asing
+    // DATA TRANSLITERASI & REFERENSI
+    const kelabaiData = [
+        { latin: 'ka', code: 'k', desc: 'Kelabai' }, { latin: 'ga', code: 'g', desc: 'Kelabai' },
+        { latin: 'nga', code: 'G', desc: 'Kelabai' }, { latin: 'pa', code: 'p', desc: 'Kelabai' },
+        { latin: 'ba', code: 'b', desc: 'Kelabai' }, { latin: 'ma', code: 'm', desc: 'Kelabai' },
+        { latin: 'ta', code: 't', desc: 'Kelabai' }, { latin: 'da', code: 'd', desc: 'Kelabai' },
+        { latin: 'na', code: 'n', desc: 'Kelabai' }, { latin: 'ca', code: 'c', desc: 'Kelabai' },
+        { latin: 'ja', code: 'j', desc: 'Kelabai' }, { latin: 'nya', code: 'N', desc: 'Kelabai' },
+        { latin: 'ya', code: 'y', desc: 'Kelabai' }, { latin: 'a', code: 'a', desc: 'Kelabai' },
+        { latin: 'la', code: 'l', desc: 'Kelabai' }, { latin: 'ra', code: 'r', desc: 'Kelabai' },
+        { latin: 'sa', code: 's', desc: 'Kelabai' }, { latin: 'wa', code: 'w', desc: 'Kelabai' },
+        { latin: 'ha', code: 'h', desc: 'Kelabai' }, { latin: 'gha', code: 'H', desc: 'Kelabai' }
+    ];
+
+    const anakSuratData = [
+        { latin: 'i', aksara: 'ka', code: 'ki', type: 'Ulu (Bitan i)' },
+        { latin: 'u', aksara: 'ku', code: 'ku', type: 'Bitan (Bitan u)' },
+        { latin: 'e', aksara: 'ke', code: 'kE', type: 'Tekelubang (e pepet)' },
+        { latin: 'é / ee', aksara: 'ké', code: 'ke', type: 'Bitchol (é taling)' },
+        { latin: 'o', aksara: 'ko', code: 'ko', type: 'Tekelubang (o)' },
+        { latin: 'ai', aksara: 'kai', code: 'kI', type: 'Diftong ai' },
+        { latin: 'au', aksara: 'kau', code: 'kW', type: 'Diftong au' },
+        { latin: '-n', aksara: 'kan', code: 'kA', type: 'Datas (Bunyi -n)' },
+        { latin: '-r', aksara: 'kar', code: 'kR', type: 'Rejenjung (Bunyi -r)' },
+        { latin: '-h', aksara: 'kah', code: 'kx', type: 'Keleniah (Bunyi -h)' },
+        { latin: '-ng', aksara: 'kang', code: 'kX', type: 'Redatas (Bunyi -ng)' },
+        { latin: 'Mati (Nengen)', aksara: 'k', code: 'kM', type: 'Membunuh vokal' }
+    ];
+
+    const angkaData = [
+        { latin: '0', code: '0' }, { latin: '1', code: '1' },
+        { latin: '2', code: '2' }, { latin: '3', code: '3' },
+        { latin: '4', code: '4' }, { latin: '5', code: '5' },
+        { latin: '6', code: '6' }, { latin: '7', code: '7' },
+        { latin: '8', code: '8' }, { latin: '9', code: '9' }
+    ];
+
+    const kelabaiMap = {
+        'gh': 'H', 'ny': 'N', 'ng': 'G',
+        'k': 'k', 'g': 'g', 'p': 'p', 'b': 'b', 'm': 'm',
+        't': 't', 'd': 'd', 'n': 'n', 'c': 'c', 'j': 'j',
+        'y': 'y', 'a': 'a', 'l': 'l', 'r': 'r', 's': 's', 
+        'w': 'w', 'h': 'h',
+        'f': 'p', 'v': 'p', 'q': 'k', 'z': 'j'
     };
 
     const anakSuratVokal = {
-        'i': 'i', 'u': 'u', 'e': 'E', 'é': 'e', 'ee': 'e',
+        'i': 'i', 'u': 'u', 'e': 'E', 'é': 'e',
         'o': 'o', 'ai': 'I', 'au': 'W'
     };
 
     const anakSuratMati = {
-        'n': 'A',  // Datas
-        'r': 'R',  // Rejenjung
-        'h': 'x',  // Keleniah
-        'ng': 'X'  // Redatas
+        'n': 'A', 'r': 'R', 'h': 'x', 'ng': 'X'
     };
 
     const nengen = 'M';
 
+    // LOGIKA TRANSLITERASI
     function transliterasi(teks) {
         let res = "";
         let i = 0;
         teks = teks.toLowerCase();
 
         while (i < teks.length) {
-            let tri = teks.substring(i, i + 3); // gh, ny
-            let bi = teks.substring(i, i + 2);  // ng, ai, au
+            let bi = teks.substring(i, i + 2);
             let uni = teks.substring(i, i + 1);
 
             let currentKonsonan = "";
             let step = 0;
 
-            // 1. IDENTIFIKASI KONSONAN
-            if (kelabai[bi]) { currentKonsonan = bi; step = 2; }
-            else if (kelabai[uni]) { currentKonsonan = uni; step = 1; }
+            if (kelabaiMap[bi]) { 
+                currentKonsonan = bi; 
+                step = 2; 
+            } else if (kelabaiMap[uni]) { 
+                currentKonsonan = uni; 
+                step = 1; 
+            }
 
             if (currentKonsonan) {
                 let nextTwo = teks.substring(i + step, i + step + 2);
                 let nextOne = teks.substring(i + step, i + step + 1);
 
-                // A. Cek Vokal Gabungan (ai, au)
-                if (anakSuratVokal[nextTwo]) {
-                    res += kelabai[currentKonsonan] + anakSuratVokal[nextTwo];
-                    i += step + 2;
-                }
-                // B. Cek Vokal Tunggal (a, i, u, e, é, o)
-                else if (nextOne === 'a') {
-                    res += kelabai[currentKonsonan];
-                    i += step + 1;
-                }
-                else if (anakSuratVokal[nextOne]) {
-                    res += kelabai[currentKonsonan] + anakSuratVokal[nextOne];
-                    i += step + 1;
-                }
-                // C. LOGIKA KRUSIAL: Bunyi Mati (n, r, h, ng) di TENGAH atau AKHIR kata
-                // Jika huruf n/r/h/ng diikuti konsonan lain ATAU spasi ATAU akhir teks
-                else if (anakSuratMati[currentKonsonan] && (kelabai[nextOne] || nextOne === " " || nextOne === "")) {
+                let isMati = anakSuratMati[currentKonsonan] && 
+                             (!nextOne || nextOne === " " || kelabaiMap[nextOne] || kelabaiMap[nextTwo]) && 
+                             nextOne !== 'a' && !anakSuratVokal[nextOne] && !anakSuratVokal[nextTwo];
+
+                if (isMati && res.length > 0 && !res.endsWith(' ')) {
                     res += anakSuratMati[currentKonsonan];
                     i += step;
+                    continue;
                 }
-                // D. Konsonan Mati selain n,r,h,ng (Gunakan Nengen)
-                else {
+
+                if (anakSuratVokal[nextTwo]) {
+                    res += kelabaiMap[currentKonsonan] + anakSuratVokal[nextTwo];
+                    i += step + 2;
+                } else if (nextOne === 'a') {
+                    res += kelabaiMap[currentKonsonan];
+                    i += step + 1;
+                } else if (anakSuratVokal[nextOne]) {
+                    res += kelabaiMap[currentKonsonan] + anakSuratVokal[nextOne];
+                    i += step + 1;
+                } else {
                     if (currentKonsonan === 'a') {
-                        res += kelabai['a'];
+                        res += kelabaiMap['a'];
                     } else {
-                        res += kelabai[currentKonsonan] + nengen;
+                        res += kelabaiMap[currentKonsonan] + nengen;
                     }
                     i += step;
                 }
-            } 
-            else {
-                // 2. LOGIKA VOKAL MANDIRI DI AWAL KATA
+            } else {
                 if (anakSuratVokal[bi]) {
-                    res += kelabai['a'] + anakSuratVokal[bi];
+                    res += kelabaiMap['a'] + anakSuratVokal[bi];
                     i += 2;
                 } else if (anakSuratVokal[uni]) {
-                    res += kelabai['a'] + anakSuratVokal[uni];
+                    res += kelabaiMap['a'] + anakSuratVokal[uni];
                     i += 1;
                 } else {
                     res += uni;
@@ -242,40 +497,98 @@
         return res;
     }
 
+    // EVENT LISTENERS & UI
     const input = document.getElementById('inputLatin');
     const output = document.getElementById('outputLampung');
 
-    input.addEventListener('input', (e) => {
+    input.addEventListener('input', () => {
         let start = input.selectionStart;
         let end = input.selectionEnd;
         let value = input.value.toLowerCase();
 
-        // OTOMATISASI: Ganti 'ee' menjadi 'é' saat mengetik
         if (value.includes('ee')) {
             value = value.replace(/ee/g, 'é');
             input.value = value;
-            
-            // Mengembalikan posisi kursor agar tidak melompat ke akhir
             input.setSelectionRange(start - 1, end - 1);
         }
 
-        // Jalankan transliterasi setelah penggantian karakter
-        output.innerText = transliterasi(value);
+        output.value = transliterasi(value);
     });
 
     function copyResult() {
-        const text = output.innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Aksara berhasil disalin!");
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value).then(() => {
+            showToast("Aksara berhasil disalin!");
+        }).catch(() => {
+            output.select();
+            document.execCommand('copy');
+            showToast("Aksara berhasil disalin!");
         });
     }
-    // GLOBAL BULLETPROOF SECURITY LAYER
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // RENDERING TABEL KAMUS REFERENSI
+    function renderReferenceGrids() {
+        // Render Kelabai
+        const gridKelabai = document.getElementById('grid-kelabai');
+        gridKelabai.innerHTML = kelabaiData.map(item => `
+            <div class="char-card" onclick="insertText('${item.latin}')">
+                <div class="char-aksara">${item.code}</div>
+                <div class="char-latin">${item.latin}</div>
+                <div class="char-desc">${item.desc}</div>
+            </div>
+        `).join('');
+
+        // Render Anak Surat
+        const gridAnak = document.getElementById('grid-anak');
+        gridAnak.innerHTML = anakSuratData.map(item => `
+            <div class="char-card" onclick="insertText('${item.latin.split(' ')[0]}')">
+                <div class="char-aksara">${item.code}</div>
+                <div class="char-latin">${item.latin}</div>
+                <div class="char-desc">${item.type}</div>
+            </div>
+        `).join('');
+
+        // Render Angka
+        const gridAngka = document.getElementById('grid-angka');
+        gridAngka.innerHTML = angkaData.map(item => `
+            <div class="char-card" onclick="insertText('${item.latin}')">
+                <div class="char-aksara">${item.code}</div>
+                <div class="char-latin">Angka ${item.latin}</div>
+            </div>
+        `).join('');
+    }
+
+    function insertText(text) {
+        input.value += text;
+        input.dispatchEvent(new Event('input'));
+        input.focus();
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    // INITIALIZATION
+    renderReferenceGrids();
+
+    // PENGAMANAN SCRIPT
     (function() {
         window.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); }, true);
         window.addEventListener('keydown', function(e) {
             if (e.key === 'F12') { e.preventDefault(); e.stopPropagation(); }
             if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) { e.preventDefault(); e.stopPropagation(); }
-            if (e.ctrlKey && ['U', 'S', 'A', 'C'].includes(e.key.toUpperCase())) { e.preventDefault(); e.stopPropagation(); }
+            if (e.ctrlKey && ['U', 'S'].includes(e.key.toUpperCase())) { e.preventDefault(); e.stopPropagation(); }
         }, true);
     })();
 </script>
