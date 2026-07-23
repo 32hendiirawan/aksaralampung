@@ -129,7 +129,7 @@
             margin-top: 0px;
         }
 
-        /* PANDUAN PETUNJUK (SESUAI HTML ASLI) */
+        /* PANDUAN PETUNJUK */
         details.guide-box {
             margin-top: 10px;
             background: #fff;
@@ -217,7 +217,7 @@
 
         @media (max-width: 600px) {
             .char-grid-5 {
-                grid-template-columns: repeat(3, 1fr); /* Penyesuaian otomatis untuk HP agar tidak terlalu sempit */
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -293,7 +293,6 @@
             <label for="inputLatin">Input Latin:</label>
             <textarea id="inputLatin" placeholder="Masukkan teks dalam huruf Latin..."></textarea>
             
-            <!-- RINCIAN PETUNJUK SAMAKAN PERSIS SEPERTI ASLI -->
             <details class="guide-box">
                 <summary>Panduan Pengetikan <b>(Penting!)</b></summary>
                 <div class="guide-content">
@@ -319,10 +318,10 @@
             </details>
         </div>
 
-        <!-- KOLOM OUTPUT AKSARA -->
+        <!-- KOLOM OUTPUT AKSARA (BENAR-BENAR KOSONG TANPA PLACEHOLDER / TEKS) -->
         <div class="editor-col">
             <label for="outputLampung">Output Aksara Lampung:</label>
-            <textarea id="outputLampung" readonly placeholder="Hasil aksara akan muncul di sini..."></textarea>
+            <textarea id="outputLampung" readonly></textarea>
             <div style="position: absolute; right: 10px; bottom: 20px;">
                 <button class="btn-copy" onclick="copyResult()">
                     📋 Salin
@@ -341,17 +340,17 @@
             <button class="tab-btn" onclick="switchTab('angka')">Angka Lampung</button>
         </div>
 
-        <!-- TAB 1: KELABAI SURAT (5 KOLOM) -->
+        <!-- TAB 1: KELABAI SURAT -->
         <div id="tab-kelabai" class="tab-content active">
             <div class="char-grid-5" id="grid-kelabai"></div>
         </div>
 
-        <!-- TAB 2: ANAK SURAT (5 KOLOM) -->
+        <!-- TAB 2: ANAK SURAT -->
         <div id="tab-anak" class="tab-content">
             <div class="char-grid-5" id="grid-anak"></div>
         </div>
 
-        <!-- TAB 3: ANGKA (5 KOLOM) -->
+        <!-- TAB 3: ANGKA -->
         <div id="tab-angka" class="tab-content">
             <div class="char-grid-5" id="grid-angka"></div>
         </div>
@@ -361,7 +360,7 @@
 <div id="toast" class="toast">Aksara berhasil disalin!</div>
 
 <script>
-    // DATA KELABAI SURAT (20 INDUK)
+    // DATA KELABAI SURAT
     const kelabaiData = [
         { latin: 'ka', code: 'k' }, { latin: 'ga', code: 'g' }, { latin: 'nga', code: 'G' }, { latin: 'pa', code: 'p' }, { latin: 'ba', code: 'b' },
         { latin: 'ma', code: 'm' }, { latin: 'ta', code: 't' }, { latin: 'da', code: 'd' }, { latin: 'na', code: 'n' }, { latin: 'ca', code: 'c' },
