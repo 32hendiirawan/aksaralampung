@@ -291,8 +291,21 @@
         <!-- KOLOM INPUT LATIN -->
         <div class="editor-col">
             <label for="inputLatin">Input Latin:</label>
-            <textarea id="inputLatin" placeholder="Masukkan teks dalam huruf Latin..."></textarea>
-            
+            <textarea id="inputLatin" placeholder="Masukkan teks dalam huruf Latin..."></textarea>            
+        </div>
+
+        <!-- KOLOM OUTPUT AKSARA (BENAR-BENAR KOSONG TANPA PLACEHOLDER / TEKS) -->
+        <div class="editor-col">
+            <label for="outputLampung">Output Aksara Lampung:</label>
+            <textarea id="outputLampung" readonly></textarea>
+            <div style="position: absolute; right: 10px; bottom: 20px;">
+                <button class="btn-copy" onclick="copyResult()">
+                    📋 Salin
+                </button>
+            </div>
+        </div>
+    </div>
+    <div>
             <details class="guide-box">
                 <summary>Panduan Pengetikan <b>(Penting!)</b></summary>
                 <div class="guide-content">
@@ -317,18 +330,6 @@
                 </div>
             </details>
         </div>
-
-        <!-- KOLOM OUTPUT AKSARA (BENAR-BENAR KOSONG TANPA PLACEHOLDER / TEKS) -->
-        <div class="editor-col">
-            <label for="outputLampung">Output Aksara Lampung:</label>
-            <textarea id="outputLampung" readonly></textarea>
-            <div style="position: absolute; right: 10px; bottom: 20px;">
-                <button class="btn-copy" onclick="copyResult()">
-                    📋 Salin
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- SEKSI TABEL REFERENSI (5 KOLOM) -->
     <div class="reference-section">
