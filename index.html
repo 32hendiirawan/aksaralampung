@@ -116,7 +116,7 @@
             background: #ffffff;
         }
 
-        /* TAB 2: LAMPUNG -> LATIN (SIDE BY SIDE LAYOUT) */
+        /* TAB 2: LAMPUNG -> LATIN */
         .compact-layout {
             display: flex;
             flex-direction: row;
@@ -369,17 +369,10 @@
             opacity: 1;
         }
 
-        /* MEDIA QUERIES UNTUK RESPONG MOBILE */
         @media (max-width: 820px) {
-            .compact-layout, .editor-grid-equal {
-                flex-direction: column;
-            }
-            .textareas-column, .keyboard-column, .editor-col-equal {
-                width: 100% !important;
-            }
-            .char-grid-5 {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .compact-layout, .editor-grid-equal { flex-direction: column; }
+            .textareas-column, .keyboard-column, .editor-col-equal { width: 100% !important; }
+            .char-grid-5 { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -437,10 +430,9 @@
         </details>
     </div>
 
-    <!-- TAB 2: LAMPUNG -> LATIN (PAS 1 LAYAR: INPUT/OUTPUT DI KIRI, KEYBOARD DI KANAN) -->
+    <!-- TAB 2: LAMPUNG -> LATIN -->
     <div id="main-lampungToLatin" class="main-tab-content">
         <div class="compact-layout">
-            <!-- KOLOM KIRI: TEKS AREA INPUT & OUTPUT -->
             <div class="textareas-column">
                 <div class="textarea-box">
                     <label for="inputLampungKB">Input Aksara Lampung:</label>
@@ -456,7 +448,6 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: KEYBOARD AKSARA LAMPUNG -->
             <div class="keyboard-column">
                 <div class="kb-section-title">Induk Huruf (Kelabai Surat)</div>
                 <div class="kb-grid" id="kb-kelabai"></div>
@@ -467,7 +458,6 @@
                 <div class="kb-section-title">Angka Lampung</div>
                 <div class="kb-grid" id="kb-angka"></div>
 
-                <!-- KONTROL KEYBOARD -->
                 <div class="kb-controls">
                     <button class="btn-ctrl space" onclick="kbInsert(' ')">␣ Spasi</button>
                     <button class="btn-ctrl backspace" onclick="kbBackspace()">⌫ Backspace</button>
@@ -625,7 +615,7 @@
         return res;
     }
 
-    // TRANSLITERASI DETEKSI AKSARA -> LATIN
+    // MAP DAN LOGIKA PERBAIKAN TRANSLITERASI AKSARA -> LATIN
     const mapAksaraToLatin = {
         'k': 'ka', 'g': 'ga', 'G': 'nga', 'p': 'pa', 'b': 'ba',
         'm': 'ma', 't': 'ta', 'd': 'da', 'n': 'na', 'c': 'ca',
@@ -659,29 +649,35 @@
 
             if (mapAksaraToLatin[ch]) {
                 let base = mapAksaraToLatin[ch];
-                let isInduk = /[a-zA-Z]/.test(ch);
+                let isInduk = /[a-zA-ZA-Z]/.test(ch);
 
-                let nextCh = code[i + 1];
-                let anak = mapAnakToLatin[nextCh];
+                // Periksa hingga 2 anak huruf bertumpuk (misal: Vokal + Akhiran)
+                let consumed = 1;
+                let currentBase = base;
 
-                if (isInduk && anak) {
-                    if (anak.type === 'vokal') {
-                        let root = base.slice(0, -1);
-                        if (base === 'a') root = '';
-                        res += root + anak.val;
-                        i += 2;
-                    } else if (anak.type === 'nengen') {
-                        let root = base.slice(0, -1);
-                        res += root;
-                        i += 2;
-                    } else if (anak.type === 'tail') {
-                        res += base + anak.val;
-                        i += 2;
+                while (i + consumed < code.length) {
+                    let nextCh = code[i + consumed];
+                    let anak = mapAnakToLatin[nextCh];
+
+                    if (anak && isInduk) {
+                        if (anak.type === 'vokal') {
+                            let root = currentBase.endsWith('a') ? currentBase.slice(0, -1) : currentBase;
+                            if (currentBase === 'a') root = '';
+                            currentBase = root + anak.val;
+                        } else if (anak.type === 'nengen') {
+                            let root = currentBase.endsWith('a') ? currentBase.slice(0, -1) : currentBase;
+                            currentBase = root;
+                        } else if (anak.type === 'tail') {
+                            currentBase = currentBase + anak.val;
+                        }
+                        consumed++;
+                    } else {
+                        break;
                     }
-                } else {
-                    res += base;
-                    i += 1;
                 }
+
+                res += currentBase;
+                i += consumed;
             } else {
                 res += ch;
                 i += 1;
