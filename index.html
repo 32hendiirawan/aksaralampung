@@ -192,7 +192,7 @@
 
         .kb-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+            grid-template-columns: repeat(10, minmax(52px, 1fr));
             gap: 4px;
         }
 
@@ -374,6 +374,7 @@
             .compact-layout, .editor-grid-equal { flex-direction: column; }
             .textareas-column, .keyboard-column, .editor-col-equal { width: 100% !important; }
             .char-grid-5 { grid-template-columns: repeat(3, 1fr); }
+            .kb-grid { grid-template-columns: repeat(5, minmax(48px, 1fr)); }
         }
     </style>
 </head>
