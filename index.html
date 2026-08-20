@@ -192,7 +192,7 @@
 
         .kb-grid {
             display: grid;
-            grid-template-columns: repeat(10, minmax(52px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
             gap: 4px;
         }
 
@@ -325,17 +325,16 @@
             background: #ffffff;
             border: 1px solid #ddd;
             border-radius: 6px;
-            padding: 6px 4px;
+            padding: 8px 4px;
             text-align: center;
             transition: all 0.2s;
-            cursor: pointer;
+            cursor: default;
             user-select: none;
         }
 
         .char-card:hover {
             border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
             background-color: #fffaf0;
         }
 
@@ -374,7 +373,6 @@
             .compact-layout, .editor-grid-equal { flex-direction: column; }
             .textareas-column, .keyboard-column, .editor-col-equal { width: 100% !important; }
             .char-grid-5 { grid-template-columns: repeat(3, 1fr); }
-            .kb-grid { grid-template-columns: repeat(5, minmax(48px, 1fr)); }
         }
     </style>
 </head>
@@ -438,7 +436,8 @@
             <div class="textareas-column">
                 <div class="textarea-box">
                     <label for="inputLampungKB">Input Aksara Lampung:</label>
-                    <textarea id="inputLampungKB" class="font-aksara" placeholder="Gunakan keyboard di samping..."></textarea>
+                    <!-- PENYEMPURNAAN INPUT: inputmode="none" dan readonly pada device touchscreen jika diperlukan -->
+                    <textarea id="inputLampungKB" class="font-aksara" inputmode="none" placeholder=""></textarea>
                 </div>
 
                 <div class="textarea-box">
@@ -653,7 +652,6 @@
                 let base = mapAksaraToLatin[ch];
                 let isInduk = /[a-zA-ZA-Z]/.test(ch);
 
-                // Periksa hingga 2 anak huruf bertumpuk (misal: Vokal + Akhiran)
                 let consumed = 1;
                 let currentBase = base;
 
@@ -710,6 +708,15 @@
     const inputLampungKB = document.getElementById('inputLampungKB');
     const outputLatinKB = document.getElementById('outputLatinKB');
 
+    // CEGAT KEYBOARD VIRTUAL BAWAAN HP
+    inputLampungKB.addEventListener('focus', (e) => {
+        e.target.setAttribute('inputmode', 'none');
+    });
+
+    inputLampungKB.addEventListener('touchstart', (e) => {
+        e.target.setAttribute('inputmode', 'none');
+    });
+
     inputLampungKB.addEventListener('input', () => {
         outputLatinKB.value = transliterasiAksaraKeLatin(inputLampungKB.value);
     });
@@ -717,19 +724,19 @@
     function kbInsert(char) {
         inputLampungKB.value += char;
         inputLampungKB.dispatchEvent(new Event('input'));
-        inputLampungKB.focus();
+        inputLampungKB.focus({ preventScroll: true });
     }
 
     function kbBackspace() {
         inputLampungKB.value = inputLampungKB.value.slice(0, -1);
         inputLampungKB.dispatchEvent(new Event('input'));
-        inputLampungKB.focus();
+        inputLampungKB.focus({ preventScroll: true });
     }
 
     function kbClear() {
         inputLampungKB.value = '';
         outputLatinKB.value = '';
-        inputLampungKB.focus();
+        inputLampungKB.focus({ preventScroll: true });
     }
 
     // RENDER BUTTONS KEYBOARD LAMPUNG
@@ -759,11 +766,11 @@
         `).join('');
     }
 
-    // GENERATE GRID REFERENSI (TAB 3)
+    // GENERATE GRID REFERENSI (TAB 3) - DIBUAT PURE MURNI TAMPILAN TANPA ONCLICK INPUT
     function renderReferenceGrids() {
         const gridKelabai = document.getElementById('grid-kelabai');
         gridKelabai.innerHTML = kelabaiData.map(item => `
-            <div class="char-card" onclick="insertFromRef('${item.latin}')">
+            <div class="char-card">
                 <div class="char-aksara">${item.code}</div>
                 <div class="char-latin">${item.latin}</div>
             </div>
@@ -771,7 +778,7 @@
 
         const gridAnak = document.getElementById('grid-anak');
         gridAnak.innerHTML = anakSuratData.map(item => `
-            <div class="char-card" onclick="insertFromRef('${item.latin.split(' ')[0]}')">
+            <div class="char-card">
                 <div class="char-aksara">${item.display}</div>
                 <div class="char-latin">${item.latin}</div>
                 <div class="char-desc">${item.type}</div>
@@ -780,18 +787,11 @@
 
         const gridAngka = document.getElementById('grid-angka');
         gridAngka.innerHTML = angkaData.map(item => `
-            <div class="char-card" onclick="insertFromRef('${item.latin}')">
+            <div class="char-card">
                 <div class="char-aksara">${item.code}</div>
                 <div class="char-latin">${item.latin}</div>
             </div>
         `).join('');
-    }
-
-    function insertFromRef(text) {
-        inputLatin.value += text;
-        inputLatin.dispatchEvent(new Event('input'));
-        const tabBtn = document.querySelectorAll('.main-tab-btn')[0];
-        switchMainTab('latinToLampung', tabBtn);
     }
 
     // NAVIGASI TAB UTAMA
